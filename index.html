@@ -1,0 +1,1041 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Azuto Cart - Online Shopping</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    color: #222;
+}
+
+header {
+    background: #101827;
+    color: white;
+    padding: 18px 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.logo {
+    font-size: 26px;
+    font-weight: bold;
+}
+
+.logo span {
+    color: #00dfb0;
+}
+
+nav {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+button {
+    padding: 10px 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+nav button {
+    background: #243248;
+    color: white;
+}
+
+nav button:hover {
+    background: #00b890;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 25px 16px;
+}
+
+.hero {
+    background: linear-gradient(120deg, #101827, #234c65);
+    color: white;
+    padding: 45px 25px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+}
+
+.hero h1 {
+    font-size: 38px;
+    margin-bottom: 12px;
+}
+
+.hero p {
+    margin-bottom: 20px;
+}
+
+.primary {
+    background: #00c99b;
+    color: #081b18;
+}
+
+.secondary {
+    background: #243248;
+    color: white;
+}
+
+.danger {
+    background: #dc3545;
+    color: white;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 11px;
+    margin: 7px 0 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.section-title {
+    margin: 25px 0 15px;
+}
+
+.toolbar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.toolbar input,
+.toolbar select {
+    flex: 1;
+    min-width: 150px;
+}
+
+.products {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 20px;
+}
+
+.product {
+    background: white;
+    border-radius: 10px;
+    padding: 18px;
+    box-shadow: 0 3px 12px #00000012;
+    text-align: center;
+}
+
+.product .emoji {
+    font-size: 65px;
+    padding: 18px;
+    background: #edf3f7;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
+.product h3 {
+    margin-bottom: 8px;
+}
+
+.price {
+    color: #00896c;
+    font-weight: bold;
+    font-size: 20px;
+    margin: 12px 0;
+}
+
+.product button {
+    margin: 4px;
+}
+
+.panel {
+    background: white;
+    border-radius: 10px;
+    padding: 22px;
+    margin-bottom: 18px;
+    box-shadow: 0 3px 12px #00000010;
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid #ddd;
+    padding: 15px 0;
+    flex-wrap: wrap;
+}
+
+.cart-item button {
+    margin: 3px;
+}
+
+.summary {
+    background: #edf3f7;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 6px;
+}
+
+.form-box {
+    max-width: 500px;
+    margin: 25px auto;
+}
+
+.form-box h2 {
+    margin-bottom: 15px;
+}
+
+footer {
+    background: #101827;
+    color: white;
+    text-align: center;
+    padding: 22px;
+    margin-top: 35px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.notice {
+    padding: 12px;
+    background: #e1f8ee;
+    border-radius: 5px;
+    margin: 12px 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+@media (max-width: 600px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .hero h1 {
+        font-size: 30px;
+    }
+
+    .cart-item {
+        align-items: flex-start;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">Azuto<span>Cart</span></div>
+
+    <nav>
+        <button onclick="showPage('home')">Home</button>
+        <button onclick="showPage('cart')">
+            Cart (<span id="cartCount">0</span>)
+        </button>
+        <button onclick="showPage('orders')">My Orders</button>
+        <button id="accountButton" onclick="showPage('auth')">
+            Login / Register
+        </button>
+        <button id="adminButton" class="hidden"
+                onclick="showPage('admin')">Admin</button>
+        <button id="logoutButton" class="hidden"
+                onclick="logout()">Logout</button>
+    </nav>
+</header>
+
+<main class="container" id="app"></main>
+
+<footer>
+    <p>© 2026 Azuto Cart. All rights reserved.</p>
+    <p>Shop smart. Shop with Azuto Cart.</p>
+</footer>
+
+<script>
+const initialProducts = [
+    {
+        id: 1,
+        name: "Wireless Headphones",
+        price: 2499,
+        category: "Electronics",
+        emoji: "🎧",
+        stock: 15,
+        description: "Wireless headphones with immersive sound."
+    },
+    {
+        id: 2,
+        name: "Gaming Mouse",
+        price: 1299,
+        category: "Gaming",
+        emoji: "🖱️",
+        stock: 20,
+        description: "Responsive gaming mouse with ergonomic design."
+    },
+    {
+        id: 3,
+        name: "Smart Watch",
+        price: 3499,
+        category: "Electronics",
+        emoji: "⌚",
+        stock: 12,
+        description: "Smart watch for everyday activity tracking."
+    },
+    {
+        id: 4,
+        name: "Bluetooth Speaker",
+        price: 1899,
+        category: "Electronics",
+        emoji: "🔊",
+        stock: 10,
+        description: "Portable speaker with powerful sound."
+    },
+    {
+        id: 5,
+        name: "Gaming Keyboard",
+        price: 2799,
+        category: "Gaming",
+        emoji: "⌨️",
+        stock: 8,
+        description: "Comfortable keyboard for gaming and work."
+    },
+    {
+        id: 6,
+        name: "Travel Backpack",
+        price: 1599,
+        category: "Lifestyle",
+        emoji: "🎒",
+        stock: 18,
+        description: "Spacious backpack for travel and everyday use."
+    }
+];
+
+function loadData(key, fallback) {
+    try {
+        const value = localStorage.getItem(key);
+        return value ? JSON.parse(value) : fallback;
+    } catch {
+        return fallback;
+    }
+}
+
+let products = loadData("azutoProducts", initialProducts);
+let cart = loadData("azutoCart", {});
+let users = loadData("azutoUsers", []);
+let orders = loadData("azutoOrders", []);
+let currentUser = loadData("azutoUser", null);
+
+let searchTerm = "";
+let categoryFilter = "All";
+let editingId = null;
+
+function saveData() {
+    localStorage.setItem("azutoProducts", JSON.stringify(products));
+    localStorage.setItem("azutoCart", JSON.stringify(cart));
+    localStorage.setItem("azutoUsers", JSON.stringify(users));
+    localStorage.setItem("azutoOrders", JSON.stringify(orders));
+    localStorage.setItem("azutoUser", JSON.stringify(currentUser));
+}
+
+function money(amount) {
+    return new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 0
+    }).format(amount);
+}
+
+function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[char]);
+}
+
+function showPage(page) {
+    const app = document.getElementById("app");
+
+    if (page === "home") renderHome();
+    else if (page === "auth") renderAuth();
+    else if (page === "cart") renderCart();
+    else if (page === "checkout") renderCheckout();
+    else if (page === "orders") renderOrders();
+    else if (page === "admin") renderAdmin();
+
+    updateHeader();
+    window.scrollTo(0, 0);
+}
+
+function updateHeader() {
+    document.getElementById("cartCount").textContent =
+        Object.values(cart).reduce((sum, qty) => sum + qty, 0);
+
+    document.getElementById("accountButton").textContent =
+        currentUser ? currentUser.name : "Login / Register";
+
+    document.getElementById("adminButton").classList.toggle(
+        "hidden", !currentUser?.isAdmin
+    );
+
+    document.getElementById("logoutButton").classList.toggle(
+        "hidden", !currentUser
+    );
+}
+
+function renderHome() {
+    const categories = ["All", ...new Set(products.map(p => p.category))];
+
+    const filtered = products.filter(p =>
+        (categoryFilter === "All" || p.category === categoryFilter) &&
+        (p.name + " " + p.category)
+            .toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    document.getElementById("app").innerHTML = `
+        <section class="hero">
+            <h1>Welcome to Azuto Cart!</h1>
+            <p>Discover electronics, gaming accessories and more.</p>
+            <button class="primary"
+                onclick="document.getElementById('productSection')
+                .scrollIntoView({behavior:'smooth'})">
+                Shop Now
+            </button>
+        </section>
+
+        <h2 class="section-title" id="productSection">
+            Our Products
+        </h2>
+
+        <div class="toolbar">
+            <input placeholder="Search products..."
+                value="${escapeHTML(searchTerm)}"
+                oninput="searchTerm=this.value;renderHome()">
+
+            <select onchange="categoryFilter=this.value;renderHome()">
+                ${categories.map(c => `
+                    <option value="${escapeHTML(c)}"
+                    ${categoryFilter === c ? "selected" : ""}>
+                    ${escapeHTML(c)}</option>
+                `).join("")}
+            </select>
+        </div>
+
+        <div class="products">
+            ${filtered.map(p => `
+                <article class="product">
+                    <div class="emoji">${escapeHTML(p.emoji)}</div>
+                    <h3>${escapeHTML(p.name)}</h3>
+                    <p>${escapeHTML(p.category)}</p>
+                    <div class="price">${money(p.price)}</div>
+                    <p>Stock: ${p.stock}</p>
+                    <button class="secondary"
+                        onclick="productDetails(${p.id})">
+                        Details
+                    </button>
+                    <button class="primary"
+                        ${p.stock <= 0 ? "disabled" : ""}
+                        onclick="addToCart(${p.id})">
+                        Add to Cart
+                    </button>
+                </article>
+            `).join("") || "<p>No products found.</p>"}
+        </div>
+    `;
+}
+
+function productDetails(id) {
+    const p = products.find(item => item.id === id);
+    if (!p) return;
+
+    document.getElementById("app").innerHTML = `
+        <div class="panel">
+            <div class="emoji">${escapeHTML(p.emoji)}</div>
+            <h2>${escapeHTML(p.name)}</h2>
+            <p>${escapeHTML(p.description)}</p>
+            <p class="price">${money(p.price)}</p>
+            <p>Available stock: ${p.stock}</p>
+            <br>
+            <button class="primary"
+                ${p.stock <= 0 ? "disabled" : ""}
+                onclick="addToCart(${p.id})">
+                Add to Cart
+            </button>
+            <button class="secondary" onclick="showPage('home')">
+                Back to Shop
+            </button>
+        </div>
+    `;
+}
+
+function addToCart(id) {
+    const product = products.find(p => p.id === id);
+    if (!product || product.stock <= 0) {
+        alert("Product is out of stock.");
+        return;
+    }
+
+    if ((cart[id] || 0) >= product.stock) {
+        alert("Maximum available stock reached.");
+        return;
+    }
+
+    cart[id] = (cart[id] || 0) + 1;
+    saveData();
+    updateHeader();
+    alert("Product added to cart!");
+}
+
+function cartTotal() {
+    return Object.entries(cart).reduce((sum, [id, qty]) => {
+        const product = products.find(p => p.id === Number(id));
+        return sum + (product ? product.price * qty : 0);
+    }, 0);
+}
+
+function renderCart() {
+    const entries = Object.entries(cart).filter(([id, qty]) =>
+        qty > 0 && products.some(p => p.id === Number(id))
+    );
+
+    document.getElementById("app").innerHTML = `
+        <h2 class="section-title">Shopping Cart</h2>
+
+        ${entries.length ? entries.map(([id, qty]) => {
+            const p = products.find(item => item.id === Number(id));
+
+            return `
+                <div class="panel cart-item">
+                    <div>
+                        <h3>${escapeHTML(p.name)}</h3>
+                        <p>${money(p.price)} each</p>
+                        <p>Quantity: ${qty}</p>
+                    </div>
+                    <div>
+                        <button class="secondary"
+                            onclick="changeQuantity(${p.id},-1)">−</button>
+                        <button class="secondary"
+                            onclick="changeQuantity(${p.id},1)">+</button>
+                        <button class="danger"
+                            onclick="removeFromCart(${p.id})">Remove</button>
+                    </div>
+                    <strong>${money(p.price * qty)}</strong>
+                </div>
+            `;
+        }).join("") : "<div class='panel'>Your cart is empty.</div>"}
+
+        ${entries.length ? `
+            <div class="panel">
+                <h3>Subtotal: ${money(cartTotal())}</h3>
+                <p>Delivery: ${cartTotal() >= 1999 ? "FREE" : "₹99"}</p>
+                <h2>Total: ${money(cartTotal() +
+                    (cartTotal() >= 1999 ? 0 : 99))}</h2>
+                <br>
+                <button class="primary"
+                    onclick="showPage('checkout')">
+                    Proceed to Checkout
+                </button>
+                <button class="secondary"
+                    onclick="showPage('home')">
+                    Continue Shopping
+                </button>
+            </div>
+        ` : ""}
+    `;
+}
+
+function changeQuantity(id, delta) {
+    const product = products.find(p => p.id === id);
+    const next = (cart[id] || 0) + delta;
+
+    if (next <= 0) delete cart[id];
+    else if (next <= product.stock) cart[id] = next;
+    else return alert("Not enough stock.");
+
+    saveData();
+    showPage("cart");
+}
+
+function removeFromCart(id) {
+    delete cart[id];
+    saveData();
+    showPage("cart");
+}
+
+function renderAuth() {
+    document.getElementById("app").innerHTML = `
+        <div class="panel form-box">
+            <h2>Login</h2>
+            <form onsubmit="login(event)">
+                <label>Email</label>
+                <input id="loginEmail" type="email" required>
+                <label>Password</label>
+                <input id="loginPassword" type="password" required>
+                <button class="primary" type="submit">Login</button>
+            </form>
+
+            <hr style="margin:22px 0">
+
+            <h2>Create Account</h2>
+            <form onsubmit="register(event)">
+                <label>Full Name</label>
+                <input id="regName" required>
+                <label>Email</label>
+                <input id="regEmail" type="email" required>
+                <label>Password</label>
+                <input id="regPassword" type="password"
+                    minlength="4" required>
+                <button class="primary" type="submit">Register</button>
+            </form>
+
+            <p class="notice">
+                Demo admin: admin@azutocart.demo<br>
+                Password: admin123
+            </p>
+        </div>
+    `;
+}
+
+function register(event) {
+    event.preventDefault();
+
+    const name = document.getElementById("regName").value.trim();
+    const email = document.getElementById("regEmail")
+        .value.trim().toLowerCase();
+    const password = document.getElementById("regPassword").value;
+
+    if (users.some(u => u.email === email) ||
+        email === "admin@azutocart.demo") {
+        return alert("This email is already registered.");
+    }
+
+    users.push({name, email, password, isAdmin: false});
+    currentUser = {name, email, isAdmin: false};
+
+    saveData();
+    alert("Registration successful!");
+    showPage("home");
+}
+
+function login(event) {
+    event.preventDefault();
+
+    const email = document.getElementById("loginEmail")
+        .value.trim().toLowerCase();
+    const password = document.getElementById("loginPassword").value;
+
+    if (email === "admin@azutocart.demo" &&
+        password === "admin123") {
+        currentUser = {
+            name: "Admin",
+            email,
+            isAdmin: true
+        };
+    } else {
+        const user = users.find(u =>
+            u.email === email && u.password === password
+        );
+
+        if (!user) return alert("Invalid email or password.");
+
+        currentUser = {
+            name: user.name,
+            email: user.email,
+            isAdmin: false
+        };
+    }
+
+    saveData();
+    alert("Login successful!");
+    showPage("home");
+}
+
+function logout() {
+    currentUser = null;
+    saveData();
+    showPage("home");
+}
+
+function renderCheckout() {
+    if (!Object.keys(cart).length) {
+        alert("Your cart is empty.");
+        return showPage("cart");
+    }
+
+    if (!currentUser) {
+        alert("Please log in before checkout.");
+        return showPage("auth");
+    }
+
+    const total = cartTotal() + (cartTotal() >= 1999 ? 0 : 99);
+
+    document.getElementById("app").innerHTML = `
+        <div class="panel form-box">
+            <h2>Checkout</h2>
+            <p>Order total: <strong>${money(total)}</strong></p>
+
+            <form onsubmit="placeOrder(event)">
+                <label>Full Name</label>
+                <input id="shippingName" required
+                    value="${escapeHTML(currentUser.name)}">
+
+                <label>Phone Number</label>
+                <input id="shippingPhone" type="tel"
+                    pattern="[0-9 +()-]{8,18}" required>
+
+                <label>Delivery Address</label>
+                <textarea id="shippingAddress" required></textarea>
+
+                <label>City</label>
+                <input id="shippingCity" required>
+
+                <label>PIN Code</label>
+                <input id="shippingPin" inputmode="numeric"
+                    pattern="[0-9]{6}" maxlength="6" required>
+
+                <label>Payment Method</label>
+                <select id="paymentMethod">
+                    <option value="COD">Cash on Delivery</option>
+                    <option value="Demo Online Payment">
+                        Online Payment (Demo Only)
+                    </option>
+                </select>
+
+                <p class="notice">
+                    This frontend demo does not process real payments.
+                </p>
+
+                <button class="primary" type="submit">
+                    Place Order
+                </button>
+            </form>
+        </div>
+    `;
+}
+
+function placeOrder(event) {
+    event.preventDefault();
+
+    for (const [id, qty] of Object.entries(cart)) {
+        const p = products.find(item => item.id === Number(id));
+
+        if (!p || p.stock < qty) {
+            alert("Stock changed. Please review your cart.");
+            return showPage("cart");
+        }
+    }
+
+    const subtotal = cartTotal();
+    const delivery = subtotal >= 1999 ? 0 : 99;
+    const payment = document.getElementById("paymentMethod").value;
+
+    if (payment === "Demo Online Payment") {
+        const proceed = confirm(
+            "This is a frontend-only demo. No real payment will be made. " +
+            "Continue with a simulated order?"
+        );
+        if (!proceed) return;
+    }
+
+    const order = {
+        id: "AZ" + Date.now(),
+        date: new Date().toLocaleString(),
+        email: currentUser.email,
+        items: Object.entries(cart).map(([id, qty]) => {
+            const p = products.find(item => item.id === Number(id));
+            return {
+                name: p.name,
+                price: p.price,
+                qty,
+                emoji: p.emoji
+            };
+        }),
+        subtotal,
+        delivery,
+        total: subtotal + delivery,
+        payment,
+        status: "Order Placed",
+        address: document.getElementById("shippingAddress").value,
+        city: document.getElementById("shippingCity").value,
+        pin: document.getElementById("shippingPin").value
+    };
+
+    for (const [id, qty] of Object.entries(cart)) {
+        products.find(p => p.id === Number(id)).stock -= qty;
+    }
+
+    orders.unshift(order);
+    cart = {};
+
+    saveData();
+    updateHeader();
+
+    document.getElementById("app").innerHTML = `
+        <div class="panel form-box">
+            <h1>✅ Order Confirmed!</h1>
+            <p>Thank you for shopping with Azuto Cart.</p>
+            <br>
+            <p>Order ID: <strong>${escapeHTML(order.id)}</strong></p>
+            <p>Total: <strong>${money(order.total)}</strong></p>
+            <p>Payment: ${escapeHTML(order.payment)}</p>
+            <br>
+            <button class="primary" onclick="showPage('orders')">
+                View Order Summary
+            </button>
+            <button class="secondary" onclick="showPage('home')">
+                Continue Shopping
+            </button>
+        </div>
+    `;
+}
+
+function renderOrders() {
+    if (!currentUser) {
+        document.getElementById("app").innerHTML = `
+            <div class="panel">
+                <h2>Please log in to view orders.</h2>
+                <button class="primary" onclick="showPage('auth')">
+                    Login
+                </button>
+            </div>
+        `;
+        return;
+    }
+
+    const mine = orders.filter(o =>
+        currentUser.isAdmin || o.email === currentUser.email
+    );
+
+    document.getElementById("app").innerHTML = `
+        <h2 class="section-title">
+            ${currentUser.isAdmin ? "All Orders" : "My Orders"}
+        </h2>
+
+        ${mine.map(o => `
+            <div class="panel">
+                <h3>Order ${escapeHTML(o.id)}</h3>
+                <p>${escapeHTML(o.date)}</p>
+                <p>Status: <strong>${escapeHTML(o.status)}</strong></p>
+                <p>Payment: ${escapeHTML(o.payment)}</p>
+                <hr style="margin:12px 0">
+
+                ${o.items.map(i => `
+                    <p>${escapeHTML(i.emoji)} ${escapeHTML(i.name)}
+                    × ${i.qty} — ${money(i.price * i.qty)}</p>
+                `).join("")}
+
+                <div class="summary">
+                    <h3>Total: ${money(o.total)}</h3>
+                    <p>Address: ${escapeHTML(o.address)},
+                    ${escapeHTML(o.city)} - ${escapeHTML(o.pin)}</p>
+                </div>
+
+                ${currentUser.isAdmin ? `
+                    <label>Update order status</label>
+                    <select onchange="updateOrderStatus('${o.id}',this.value)">
+                        ${["Order Placed","Processing","Shipped",
+                           "Delivered","Cancelled"].map(s => `
+                            <option ${o.status === s ? "selected" : ""}>
+                                ${s}
+                            </option>
+                        `).join("")}
+                    </select>
+                ` : ""}
+            </div>
+        `).join("") || "<div class='panel'>No orders found.</div>"}
+    `;
+}
+
+function updateOrderStatus(id, status) {
+    const order = orders.find(o => o.id === id);
+    if (!order || !currentUser?.isAdmin) return;
+
+    order.status = status;
+    saveData();
+    showPage("orders");
+}
+
+function renderAdmin() {
+    if (!currentUser?.isAdmin) {
+        document.getElementById("app").innerHTML = `
+            <div class="panel">
+                <h2>Admin access required</h2>
+                <button class="primary" onclick="showPage('auth')">
+                    Login as Admin
+                </button>
+            </div>
+        `;
+        return;
+    }
+
+    document.getElementById("app").innerHTML = `
+        <h2 class="section-title">Admin Dashboard</h2>
+
+        <div class="panel">
+            <h3 id="productFormTitle">Add Product</h3>
+
+            <form onsubmit="saveProduct(event)">
+                <input id="editId" type="hidden">
+
+                <label>Product Name</label>
+                <input id="pName" required>
+
+                <label>Category</label>
+                <input id="pCategory" required>
+
+                <label>Price (INR)</label>
+                <input id="pPrice" type="number" min="1" required>
+
+                <label>Stock</label>
+                <input id="pStock" type="number" min="0" required>
+
+                <label>Emoji</label>
+                <input id="pEmoji" value="📦" required>
+
+                <label>Description</label>
+                <textarea id="pDescription" required></textarea>
+
+                <button class="primary" type="submit">Save Product</button>
+                <button class="secondary" type="button"
+                    onclick="resetProductForm()">Clear</button>
+            </form>
+        </div>
+
+        <div class="panel">
+            <h3>Product Management</h3>
+            <div style="overflow-x:auto">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${products.map(p => `
+                            <tr>
+                                <td>${escapeHTML(p.emoji)}
+                                    ${escapeHTML(p.name)}</td>
+                                <td>${money(p.price)}</td>
+                                <td>${p.stock}</td>
+                                <td>
+                                    <button class="secondary"
+                                        onclick="editProduct(${p.id})">
+                                        Edit
+                                    </button>
+                                    <button class="danger"
+                                        onclick="deleteProduct(${p.id})">
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join("")}
+                    </tbody>
+                </table>
+            </div>
+
+            <br>
+            <button class="primary" onclick="showPage('orders')">
+                Manage Orders
+            </button>
+        </div>
+    `;
+}
+
+function saveProduct(event) {
+    event.preventDefault();
+
+    const id = Number(document.getElementById("editId").value);
+
+    const product = {
+        id: id || Date.now(),
+        name: document.getElementById("pName").value.trim(),
+        category: document.getElementById("pCategory").value.trim(),
+        price: Number(document.getElementById("pPrice").value),
+        stock: Number(document.getElementById("pStock").value),
+        emoji: document.getElementById("pEmoji").value.trim(),
+        description: document.getElementById("pDescription").value.trim()
+    };
+
+    if (id) {
+        products = products.map(p => p.id === id ? product : p);
+    } else {
+        products.push(product);
+    }
+
+    saveData();
+    alert("Product saved successfully!");
+    showPage("admin");
+}
+
+function editProduct(id) {
+    const p = products.find(item => item.id === id);
+    if (!p || !currentUser?.isAdmin) return;
+
+    document.getElementById("editId").value = p.id;
+    document.getElementById("pName").value = p.name;
+    document.getElementById("pCategory").value = p.category;
+    document.getElementById("pPrice").value = p.price;
+    document.getElementById("pStock").value = p.stock;
+    document.getElementById("pEmoji").value = p.emoji;
+    document.getElementById("pDescription").value = p.description;
+    document.getElementById("productFormTitle").textContent = "Edit Product";
+
+    window.scrollTo({top: 0, behavior: "smooth"});
+}
+
+function resetProductForm() {
+    document.getElementById("editId").value = "";
+    document.querySelector("#pName").value = "";
+    document.querySelector("#pCategory").value = "";
+    document.querySelector("#pPrice").value = "";
+    document.querySelector("#pStock").value = "";
+    document.querySelector("#pEmoji").value = "📦";
+    document.querySelector("#pDescription").value = "";
+    document.getElementById("productFormTitle").textContent = "Add Product";
+}
+
+function deleteProduct(id) {
+    if (!currentUser?.isAdmin) return;
+    if (!confirm("Delete this product?")) return;
+
+    products = products.filter(p => p.id !== id);
+    delete cart[id];
+
+    saveData();
+    showPage("admin");
+}
+
+updateHeader();
+showPage("home");
+</script>
+
+</body>
+</html>
